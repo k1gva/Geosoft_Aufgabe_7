@@ -22,7 +22,7 @@ var featureSchema = mongoose.Schema({
 var Feature = mongoose.model('Feature', featureSchema);
 
 /* database connection */
-mongoose.connect('mongodb://localhost:' + config.mongoPort + '/ex06DB');
+mongoose.connect('mongodb://localhost:' + config.mongoPort + '/ex07DB');
 var database = mongoose.connection;
 
 database.on('error', console.error.bind(console, 'connection error:'));
@@ -30,6 +30,8 @@ database.once('open', function (callback) {
   console.log('connection to database established on port ' + config.mongoPort);
 });
 
+// to allow serving static files 
+app.use(express.static('webapp'));
 
 /* http routing */
 // code which is executed on every request
@@ -39,6 +41,7 @@ app.use(function(req, res, next) {
     //res.header('Access-Control-Allow-Methods', 'GET,POST');
     next();
 });
+
 
 // returns json of all stored features
 app.get('/getFeatures', function(req, res) {

@@ -1,0 +1,207 @@
+<!-- Author: Saskia Geuking (s_geuk02@wwu.de), Jan Kruse (j_krus12@wwu.de)-->
+<!-- Date:   150702 -->
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>GS ex07 - Map</title>
+
+    <!-- library includes -->
+    <script type="text/javascript" src="lib/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="lib/js/bootstrap.min.js"></script>
+    <script src="lib/js/leaflet.js"></script>
+    <script src="lib/js/leaflet.draw.js"></script>
+    <script src="lib/js/jsnlog.min.js"></script>
+	<script type="text/javascript" src="lib/js/leaflet-routing-machine.js"></script>
+	<script type="text/javascript" src="lib/js/leaflet-routing-machine.min.js"></script>
+    <script type="text/javascript" src="lib/js/Control.Geocoder.js"></script>
+
+    <!-- custom scripts -->
+    <script type="text/javascript" src="js/mapInit.js" defer=true></script>
+    <script type="text/javascript" src="js/mapDraw.js" defer=true></script>
+    <script type="text/javascript" src="js/mapFunctions.js" defer=true></script>
+    <script type="text/javascript" src="js/mapIO.js"></script>
+    <script type="text/javascript" src="js/txtToGeoJSONParser.js"></script>
+     
+    <!-- style definition for the map (height) -->
+    <style>
+      #map { height: 470px; }
+    </style>
+
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="lib/css/leaflet.css" />
+    <link rel="stylesheet" href="lib/css/leaflet.draw.css" />
+	<link rel="stylesheet" href="lib/css/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="lib/css/Control.Geocoder.css" />
+
+  </head>
+
+  <body id="body">
+
+    <div class="container">
+    
+      <!-- row for the navbar -->
+      <div class="row">
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand">Geosoftware - Exercise 7</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="#">
+                  <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                  Map
+                </a></li>
+                <li><a href="info.html">
+                  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                  Info
+                </a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div> <!-- /navbar row -->
+      
+      <!-- row for content -->
+      <div class="row"> 
+        
+        <!-- column for content -->
+        <div class="col-md-6">
+          <!--  contains the map -->
+          <div class="row">
+            <div id="map"></div>
+          </div>
+          
+          <br>
+          
+          <!-- buttons to geolocate fade the map in and out -->
+          <div class="row">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default" onclick='toggleMap()'>
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+                toggle map
+              </button>
+                
+              <button type="button" class="btn btn-default" onclick='geolocate()'>
+                <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>
+                tell Google my location
+              </button>
+            </div>
+          </div>
+          
+          <br>
+          
+        </div>
+                
+        <div class="col-md-6">
+          <div class="panel-group">
+          
+            <!-- textfield which contains the GeoJSON from the map -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="text-muted" data-toggle="collapse" data-target="#textareaBody">
+                  <span class="glyphicon glyphicon-console" aria-hidden="true"></span>
+                  Draw a custom feature on the map, and it's underlying GeoJSON will be shown here
+                </a>
+              </div>
+              <div class="panel-body panel-collapse collapse out" id="textareaBody">
+                <textarea type="text" class="form-control" id="drawnItemJSONText" placeholder="GeoJSON of a drawn feature will be placed here" rows="5"></textarea>
+              </div>
+            </div>
+                    
+            <!-- form to save and load from the DB -->		  
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="text-muted" data-toggle="collapse" data-target="#dbForm">
+                  <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                  Save the feature which is shown in the above textarea to a remote database server, whose endpoint must be specified below
+                </a>
+              </div>
+              
+              <div class="panel-body panel-collapse collapse in" id="dbForm">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="db-url" value="http://localhost:8080"placeholder="http://...">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick='saveToDB()'>
+                      <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
+                      save to DB
+                    </button>
+                    <button class="btn btn-default" type="button" onclick='loadFromDB()'>
+                      <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+                      load from DB
+                    </button>
+                  </span>
+                </div>
+
+                <table id="tableDB" class="table table-hover table-condensed hidden">
+                  <thead>
+                    <tr>
+                      <td ><b>#</b></td>
+                      <td ><b>Name</b></td>
+                      <td><b>Type</b></td>
+                      <td><b>Date Inserted</b></td>
+                    </tr>
+                  </thead>
+                  <tbody id="tableDBContents"></tbody>
+                </table>
+              </div><!-- /panel body -->
+
+            </div>
+
+            <!-- textfield to ajax a GeoJSON file -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="text-muted" data-toggle="collapse" data-target="#ajaxForm">
+                  <span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+                  Enter the URL to a GeoJSON-file
+                  and click the button to show it's content on the map
+                </a>
+              </div>
+              <div class="panel-body panel-collapse collapse out" id="ajaxForm">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="urlTextfield" placeholder="http://...">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick='ajaxGJSON()'>
+                      show GeoJSON!
+                    </button>
+                  </span>
+                </div><!-- /input-group -->
+              </div>
+            </div>
+
+            <!-- file loader -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="text-muted" data-toggle="collapse" data-target="#fileForm">
+                  <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp
+                  Select a textfile containing coordinates of a multiline and show it's content on the map
+                </a>
+              </div>
+              <div class="panel-body panel-collapse collapse out" id="fileForm">
+                <input type='file' accept='text/plain' onchange='loadFile(event)'>
+              </div>
+            </div>
+
+          </div> <!-- /panel-group -->
+         
+        </div> <!-- /content column -->
+        
+      </div> <!-- /content row -->
+      
+    </div> <!-- /container -->
+  </body>
+
+</html>
