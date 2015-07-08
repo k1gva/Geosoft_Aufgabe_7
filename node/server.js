@@ -3,6 +3,7 @@
 var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+var path       = require('path');
 
 var app = express();
 app.use(bodyParser.urlencoded({extended: true})); // to enable processing of the received post content
@@ -30,6 +31,7 @@ database.once('open', function (callback) {
   console.log('connection to database established on port ' + config.mongoPort);
 });
 
+app.use(express.static('webapp'));
 
 /* http routing */
 // code which is executed on every request
@@ -39,6 +41,18 @@ app.use(function(req, res, next) {
     //res.header('Access-Control-Allow-Methods', 'GET,POST');
     next();
 });
+
+/**
+// when localhost:8080/index.html is opened, the index file is shown
+app.get('/index.html', function(req, res) {
+        res.sendFile(path.join(__dirname, '/index.html'));
+});
+
+// when
+app.get('/info.html', function(req, res) {
+        res.sendFile(path.join(__dirname, '/info.html'));
+});
+*/
 
 // returns json of all stored features
 app.get('/getFeatures', function(req, res) {
