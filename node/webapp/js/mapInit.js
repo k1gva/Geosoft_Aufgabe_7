@@ -22,19 +22,24 @@ var osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 var ocmLayer = new L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', {
      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="http://www.thunderforest.com/">Andy Allan</a>'
 });
- console.log("eins");
+
+
+
 /**
-* 
+*  leaflet routing machine with leaflet control geocoder 
 */
 L.Routing.control({
   waypoints: [
-    L.latLng(57.74, 11.94),
-    L.latLng(57.6792, 11.949)
-  ],
-  routeWhileDragging: true
+      // starting waypoint
+      L.latLng(),
+      // end waypoint
+      L.latLng()
+    ],
+    routeWhileDragging: true,
+    geocoder: L.Control.Geocoder.nominatim()
 }).addTo(map);
 
-console.log("zwei");
+
 // Initialise the FeatureGroup to store database layers
 var dbFeatures = new L.FeatureGroup();
 map.addLayer(dbFeatures);

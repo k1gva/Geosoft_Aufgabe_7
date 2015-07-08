@@ -3,10 +3,7 @@
 install mongoDB and start its service
 cd to /node/
     npm install
+	mongod
     npm start
 
 
-## optional: db server on custom path & port:
-change mongoPort in config in server.js to your port
-    mongod --port 1337 --dbpath dbFolder
-    npm start

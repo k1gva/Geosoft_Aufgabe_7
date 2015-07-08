@@ -3,7 +3,6 @@
 var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
-var path       = require('path');
 
 var app = express();
 app.use(bodyParser.urlencoded({extended: true})); // to enable processing of the received post content
@@ -23,7 +22,7 @@ var featureSchema = mongoose.Schema({
 var Feature = mongoose.model('Feature', featureSchema);
 
 /* database connection */
-mongoose.connect('mongodb://localhost:' + config.mongoPort + '/ex06DB');
+mongoose.connect('mongodb://localhost:' + config.mongoPort + '/ex07DB');
 var database = mongoose.connection;
 
 database.on('error', console.error.bind(console, 'connection error:'));
@@ -31,6 +30,7 @@ database.once('open', function (callback) {
   console.log('connection to database established on port ' + config.mongoPort);
 });
 
+// to allow serving static files 
 app.use(express.static('webapp'));
 
 /* http routing */
@@ -42,17 +42,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-/**
-// when localhost:8080/index.html is opened, the index file is shown
-app.get('/index.html', function(req, res) {
-        res.sendFile(path.join(__dirname, '/index.html'));
-});
-
-// when
-app.get('/info.html', function(req, res) {
-        res.sendFile(path.join(__dirname, '/info.html'));
-});
-*/
 
 // returns json of all stored features
 app.get('/getFeatures', function(req, res) {
