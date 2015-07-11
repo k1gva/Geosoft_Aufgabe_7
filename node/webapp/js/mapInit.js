@@ -1,7 +1,7 @@
 /**  
 * @desc   Creates a map in  the HTML document using leaflet
-* @author Norwin Roosen, Stefanie Nagelsdiek
-* @date   150601
+* @author Saskia Geuking, Jan Kruse
+* @date   150702
 */
 
 'use strict';
@@ -24,21 +24,26 @@ var ocmLayer = new L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{
 });
 
 
-
 /**
 *  leaflet routing machine with leaflet control geocoder 
 */
 L.Routing.control({
-  waypoints: [
-      // starting waypoint
-      L.latLng(),
-      // end waypoint
-      L.latLng()
-    ],
+    waypoints: [],
+    addWaypoints: true,
     routeWhileDragging: true,
     geocoder: L.Control.Geocoder.nominatim()
 }).addTo(map);
 
+/**
+ * @desc saves the last route into the database
+ */
+function saveToDBRoute() {
+    var name = prompt('Wie soll die Route heissen?');
+    var points = L.Routing.Waypoint.getWaypoints();
+    
+    console.log(points);
+    
+};
 
 // Initialise the FeatureGroup to store database layers
 var dbFeatures = new L.FeatureGroup();

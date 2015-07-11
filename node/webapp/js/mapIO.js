@@ -1,7 +1,7 @@
 /**  
 * @desc   functions that provide layer input and output for the map
-* @author Norwin Roosen, Stefanie Nagelsdiek
-* @date   150601
+* @author Jan Kruse, Saskia Geuking
+* @date   150702
 */
 
 "use strict";
@@ -88,9 +88,9 @@ function loadFromDB() {
           JL('ajaxLogger').error("unable to get database content (" + errorThrown + ")");
        }
      });
-
-
 };
+
+
 
 
 /**  
