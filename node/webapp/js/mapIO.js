@@ -90,6 +90,39 @@ function loadFromDB() {
      });
 };
 
+/**
+ * @desc saves the last route into the database
+ */
+function saveToDBRoute() {
+    var name = prompt('Wie soll die Route heissen?');
+    var route = routeControl.getWaypoints();
+    
+    console.log(route);
+    
+    if ( name != undefined && route != '' ) {
+        var content = route;
+        var url = $('#db-url').val() + '/addFeature?name=' + name;
+
+        // perform post ajax
+          $.ajax({
+            type: 'POST',
+            data: content,
+            url: url,
+            timeout: 5000,
+            success: function(data, textStatus ){
+               JL('ajaxLogger').info("feature was succesfully added to the database on " + url);
+            },
+            error: function(xhr, textStatus, errorThrown){
+               JL('ajaxLogger').error('unable to save to database (' + errorThrown + ')');
+            }
+          });
+
+          //refresh table
+          loadFromDB();
+     } else {
+          JL('ajaxLogger').error('unable to save to database: no JSON or name provided');
+     }
+};
 
 
 

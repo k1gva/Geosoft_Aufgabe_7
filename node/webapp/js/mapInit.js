@@ -6,6 +6,7 @@
 
 'use strict';
 
+
 // create logger & register it to consoleAppender
 JL("mapLogger").setOptions({"appenders": [consoleAppender]});
 
@@ -23,27 +24,16 @@ var ocmLayer = new L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{
      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Tiles courtesy of <a href="http://www.thunderforest.com/">Andy Allan</a>'
 });
 
-
 /**
 *  leaflet routing machine with leaflet control geocoder 
 */
-L.Routing.control({
+var routeControl = L.Routing.control({
     waypoints: [],
     addWaypoints: true,
     routeWhileDragging: true,
     geocoder: L.Control.Geocoder.nominatim()
 }).addTo(map);
 
-/**
- * @desc saves the last route into the database
- */
-function saveToDBRoute() {
-    var name = prompt('Wie soll die Route heissen?');
-    var points = L.Routing.Waypoint.getWaypoints();
-    
-    console.log(points);
-    
-};
 
 // Initialise the FeatureGroup to store database layers
 var dbFeatures = new L.FeatureGroup();

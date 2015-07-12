@@ -3,6 +3,7 @@
 var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+var permalinks = require('permalinks');
 
 var app = express();
 app.use(bodyParser.urlencoded({extended: true})); // to enable processing of the received post content
